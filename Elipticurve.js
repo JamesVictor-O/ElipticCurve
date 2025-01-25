@@ -1,23 +1,30 @@
+const keccak256 = require("keccak256");
 const ElipticCurve = require("elliptic").ec;
 const crypto = require("crypto")
 
 
-
-const EC = require('elliptic').ec;
-const ec = new EC('secp256k1');
+const ec = new ElipticCurve('secp256k1');
 
 
 
 function GenerateAddress(){
 const keyPair = ec.genKeyPair();
+
+// getting my private key
 const privateKey = keyPair.getPrivate("hex")
 
-// const sha256Hash = crypto.createHash("sha256").update(publicKey, "hex").digest();
-// let keyPair = ec.keyFromPrivate(sha256Hash);
+// Get the public key (in uncompressed hexadecimal format)
+const publicKey = keyPair.getPublic("hex");
 
-const publicKey = keyPair.getPublic("hex")
 
- console.log(publicKey)
+
+// getting my public key
+const publicKeyBytes = Buffer.from(publicKey.slice(2), "hex");
+const publicKeyHash = keccak256(publicKeyBytes).toString("hex");
+
+
+const address = "0x" + publicKeyHash.slice(-40)
+console.log(address)
 };
 
 GenerateAddress()
